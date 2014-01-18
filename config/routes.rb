@@ -1,10 +1,6 @@
 WebsiteOne::Application.routes.draw do
 
-  devise_for :users, :controllers => {
-                                        registrations: 'users/registrations',
-                                        sessions: 'users/sessions'
-                                    }
-
+  devise_for :users
   root 'visitors#index'
 
   resources :projects do
