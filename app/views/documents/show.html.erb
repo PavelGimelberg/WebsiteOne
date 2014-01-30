@@ -1,19 +1,40 @@
-<p id="notice"><%= notice %></p>
+<% unless @document.ancestors.empty? %>
+    <h4>
+    Subdocument of <%= link_to @document.parent.title.downcase , project_document_path(@project, @document.parent) %>
+    </h4>
+<% end %>
+<h1>
+  <div id="document_title" style="width: 100%" data-mercury="simple" data-type="editable"><%= @document.title %></div>
+</h1>
+<small>Created: <%= @document.created_at -%> Project: <%= @project.title %>  </small>
 
-<p>
-  <strong>Title:</strong>
-  <%= @document.title %>
-</p>
+<div class="small-divider"></div>
+<div id="document_body" style="width: 100%" data-mercury="full" data-type="editable"><%= clean_html(@document.body) %></div>
+<div class="small-divider"></div>
+<% if user_signed_in? %>
+    <%= link_to 'Edit', mercury_edit_path, id: 'edit_link',
+                data: {save_url: project_document_mercury_update_path(@project, @document)},
+                class: 'btn btn-primary' %>
+    <% if @document.root? %>
+        <%= link_to (['New ', @document.title.singularize].join), new_project_document_path(project_id: @project.id, parent_id: @document.id), :type => 'button', :class => 'btn btn-default' %>
+    <% end %>
+<% end %>
+<div class="small-divider"></div>
+<div>
+  <% unless @document.children.empty? %>
+      <% string = 'Documents' %>
+      <h2>
+        <%= string.singularize if @document.children.count == 1 %>
+        <%= string if @document.children.count > 1 %> for <%= @document.title.downcase %> </h2>
+      <ul class="list-group">
+        <% @document.children.each do |child| %>
+            <li class="list-group-item">
+              <strong><%= link_to child.title, project_document_path(@project, child) %>  </strong>
+              <div class="pull-right">Created: <%= child.created_at -%></div>
+            </li>
+        <% end %>
+      </ul>
+  <% end %>
+  <br />
 
-<p>
-  <strong>Body:</strong>
-  <%= @document.body %>
-</p>
-
-<p>
-  <strong>Project:</strong>
-  <%= @document.project_id %>
-</p>
-
-<%= link_to 'Edit', edit_project_document_path(id: @document.id, project_id: @document.project_id) %> |
-<%= link_to 'Back', project_documents_path(project_id: @document.project_id) %>
+</div>

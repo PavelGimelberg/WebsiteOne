@@ -12,6 +12,15 @@ gem 'jbuilder', '~> 1.2' # Json for declaring
 gem 'devise' # Authentication local and 3rd party
 gem 'bootstrap-sass', '~> 3.0.2.0' # JS Bootstrap library support
 gem 'factory_girl_rails'
+gem 'mercury-rails', github: 'jejacks0n/mercury'
+gem 'faker'
+gem 'omniauth'
+gem 'omniauth-github', git: 'git://github.com/intridea/omniauth-github.git'
+gem 'omniauth-gplus', git: 'git://github.com/samdunne/omniauth-gplus.git'
+gem 'font-awesome-rails'
+gem 'high_voltage'
+gem 'acts_as_tree', '~> 1.5.0'
+gem 'acts_as_follower'
 
 group :test do
   gem 'capybara' # Simulates user actions for cucumber
@@ -21,12 +30,15 @@ group :test do
   gem 'webrat'  # Another Headless driver for capybara
   gem 'launchy' # Opens capybara response in your browser on save_and_open_page
   gem 'database_cleaner'  # Provides strategies for cleaning up the test db after test runs
-  gem 'zeus'
+  gem 'zeus' # rails preloading environment
 end
 
 group :development, :test do
   gem 'rspec-rails' #unit testing
   gem 'debugger'  # Use debugger
+  gem 'jasmine'
+  gem 'jasmine-jquery-rails'
+  gem 'colored'
 end
 
 group :production do

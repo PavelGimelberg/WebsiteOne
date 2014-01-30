@@ -5,50 +5,38 @@ Given(/^the following documents exist:$/) do |table|
   end
 end
 
-# Bryan: This is not valid, no project id
-#Then(/^I should be on documents page$/) do
-#  expect(current_path).to eq project_documents_path
-#end
-
-# Bryan: replaced with more general approach
-#Then(/^I should be on the documents page for project "([^"]*)"$/) do |title|
-#  id = Project.find_by_title(title).id
-#  expect(current_path).to eq project_documents_path(id)
-#end
-
-# Bryan: replaced with more general approach
-#Then(/I should be on "([^"]*)" documents page for document "([^"]*)"/) do |action, title|
-#  id = Document.find_by_title(title).id
-#  action = action.downcase.singularize
-#  p
-#  if action == 'show'
-#    expect(current_path).to eq document_path(id)
-#  else
-#    expect(current_path).to eq eval("#{action}_document_path(#{id})")
-#  end
-#end
-
-# TODO Bryan: pretty hackish way, possibly could use refactoring
-When(/I click the "([^"]*)" button for document "([^"]*)"/) do |button, title|
-  all(:xpath, '//tbody/tr').each do |elem|
-    begin
-      elem.find(:xpath, 'td', text: title)
-      elem.click_link_or_button button
-    rescue
-      # do nothing
+When(/^I click the "([^"]*)" button for document "([^"]*)"$/) do |button, document_name|
+  document = Document.find_by_title(document_name)
+  if document
+    within("tr##{document.id}") do
+      click_link_or_button button
     end
+  else
+    visit path_to(button, 'non-existent')
   end
 end
 
-#When(/^I should see a link to "([^"]*)" page for document "([^"]*)"$/) do |action, title|
-#  id = Document.find_by_title(title).id
-#  action = action.downcase.singularize
-#  # TODO figure out why this always returns www.example.com
-#  p url_for(controller: :documents, action: action, id: id)
-#  if action == 'show'
-#    expected_path = document_path(id)
+When(/^I should not see the document "([^"]*)"$/) do |title|
+  page.should have_text title, visible: false
+end
+
+#| Howto         | How to start     |          2 | 55 |     33    |
+#| Another doc   | My content       |          2 | 66 |     33    |
+#| Howto 2       | My documentation |          1 | 77 |     44    |
+
+
+#When(/^I click the "([^"]*)" button for project "([^"]*)"$/) do |button, project_name|
+#  project = Project.find_by_title(project_name)
+#  if project
+#    within("tr##{project.id}") do
+#      click_link_or_button button
+#    end
 #  else
-#    expected_path = eval("#{action}_document_path(#{id})")
+#    visit path_to(button, 'non-existent')
 #  end
-#  page.has_link?(action, href: expected_path)
 #end
+When(/^I click the sidebar link "([^"]*)"$/) do |link|
+  within('ul#sidebar') do
+    click_link_or_button link
+  end
+end

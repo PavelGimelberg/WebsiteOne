@@ -15,10 +15,7 @@ describe 'projects/index.html.erb' do
       render
 
       rendered.should have_css('table#projects')
-
-      rendered.within('table#projects thead') do |table_row|
-        table_row.should have_css('legend', :text => 'List of Projects')
-      end
+      rendered.should have_css('h1', :text => 'List of Projects')
     end
 
     it 'should display content' do
@@ -29,19 +26,10 @@ describe 'projects/index.html.erb' do
       end
     end
 
-    it 'should render a documents button' do
-      render
-      i = 0
-      rendered.within('table#projects tbody') do |table_row|
-        i += 1
-        expect(table_row).to have_link('Documents', href: project_documents_path(i))
-      end
-    end
-
     it 'should render a link' do
       render
       rendered.within('table#projects tbody') do |table_row|
-        expect(table_row).to have_link(@project_one.title , href: project_path(@project_one.id))
+        expect(table_row).to have_link(@project_one.title, href: project_path(@project_one.id))
       end
     end
 
@@ -66,17 +54,6 @@ describe 'projects/index.html.erb' do
         expect(table_row).to have_link('Edit', href: edit_project_path(i))
       end
     end
-
-    it 'should render a link Destroy' do
-      render
-      #TODO Y refactor to a smarter traversing
-      i = 0
-      rendered.within('table#projects tbody') do |table_row|
-        i += 1
-        expect(table_row).to have_link('Destroy', href: project_path(i))
-      end
-    end
-
   end
 
   context 'user not signed in' do
@@ -96,16 +73,6 @@ describe 'projects/index.html.erb' do
       rendered.within('table#projects tbody') do |table_row|
         i += 1
         expect(table_row).not_to have_link('Edit', href: edit_project_path(i))
-      end
-    end
-
-    it 'should not render a link Destroy' do
-      render
-      #TODO Y refactor to a smarter traversing
-      i = 0
-      rendered.within('table#projects tbody') do |table_row|
-        i += 1
-        expect(table_row).not_to have_link('Destroy', href: project_path(i))
       end
     end
   end

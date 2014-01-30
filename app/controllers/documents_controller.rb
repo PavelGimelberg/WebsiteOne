@@ -1,7 +1,7 @@
 class DocumentsController < ApplicationController
+  layout 'with_sidebar'
   before_action :set_document, only: [:show, :edit, :update, :destroy]
   before_action :authenticate_user!, except: [ :index, :show ]
-
   before_action :find_project
 
 
@@ -10,8 +10,7 @@ class DocumentsController < ApplicationController
   def index
     # TODO separate route for "documents for a project"
     #@documents = Document.all
-    @documents = Document.where("project_id = ?", @project.id).order(:created_at)
-
+    @documents = Document.where('project_id = ?', @project.id).order(:created_at)
   end
 
   # GET /documents/1
@@ -21,7 +20,9 @@ class DocumentsController < ApplicationController
 
   # GET /documents/new
   def new
+    set_parent
     @document = Document.new
+
   end
 
   # GET /documents/1/edit
@@ -34,7 +35,7 @@ class DocumentsController < ApplicationController
     @document = Document.new(document_params)
     respond_to do |format|
       if @document.save
-        format.html { redirect_to project_documents_path(@project), notice: 'Document was successfully created.' }
+        format.html { redirect_to project_document_path(@project, @document), notice: 'Document was successfully created.' }
         format.json { render action: 'show', status: :created, location: @document }
       else
         format.html { render action: 'new' }
@@ -68,6 +69,18 @@ class DocumentsController < ApplicationController
     end
   end
 
+  def mercury_update
+    @document = Document.find(params[:document_id])
+    if @document.update_attributes(title: params[:content][:document_title][:value],
+                                   body: params[:content][:document_body][:value])
+      render text: '' # So mercury knows it is successful
+    end
+  end
+
+  def mercury_saved
+    redirect_to project_document_path(@project, id: params[:document_id]), notice: 'The document has been successfully updated.'
+  end
+
   private
   def find_project
     if params[:project_id]
@@ -76,11 +89,20 @@ class DocumentsController < ApplicationController
   end
 
   def set_document
-      @document = Document.find(params[:id])
+    @document = Document.find(params[:id])
+  end
+
+  def set_parent
+    if params[:parent_id].present?
+    @parent = Document.find(params[:parent_id]).title
+    else
+      @parent = 'Document'
     end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def document_params
-      params.require(:document).permit(:title, :body, :project_id)
-    end
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def document_params
+    params.require(:document).permit(:title, :body, :project_id, :parent_id)
+  end
 end
